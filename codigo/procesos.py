@@ -2,7 +2,7 @@ import array_queue as arr
 
 class Procesos:
 
-    def __init__(self, user_id, process_id, tipo, d_estimada, d_real):
+    def __init__(self, user_id, process_id,tipo,d_estimada,d_real):
         self._user_id = user_id
         self._process_id = process_id
         self._tipo = tipo
@@ -26,7 +26,7 @@ class Procesos:
     @property
     def d_estimada(self):
         return self._d_estimada
-    @d_estimada.settter
+    @d_estimada.setter
     def d_estimada(self, d_estimada):
         self._d_estimada = d_estimada
 
@@ -34,20 +34,6 @@ class Procesos:
     @property
     def d_real(self):
         return self._d_real
-    @d_real.settter
+    @d_real.setter
     def d_real(self, d_real):
         self._d_real = d_real
-
-
-
-class GPU (Procesos):
-    def __init__(self, user_id, process_id, tipo, d_estimada, d_real):
-
-        super().__init__(user_id, process_id, tipo, d_estimada, d_real)
-        
-
-class CPU (Procesos):
-    def __init__(self, user_id, process_id, tipo, d_estimada, d_real):
-
-        super().__init__(user_id, process_id, tipo, d_estimada, d_real)
-        
