@@ -9,6 +9,8 @@ class Procesos:
         self._d_estimada = d_estimada
         self._d_real = d_real
 
+    def __str__(self) -> str:
+        return f'{self.process_id}, {self.user_id}, {self.tipo}, {self.d_estimada}, {self.d_real}'
 
     @property
     def user_id(self):
