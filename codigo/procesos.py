@@ -37,3 +37,17 @@ class Procesos:
     @d_real.settter
     def d_real(self, d_real):
         self._d_real = d_real
+
+
+
+class GPU (Procesos):
+    def __init__(self, user_id, process_id, tipo, d_estimada, d_real):
+
+        super().__init__(user_id, process_id, tipo, d_estimada, d_real)
+        
+
+class CPU (Procesos):
+    def __init__(self, user_id, process_id, tipo, d_estimada, d_real):
+
+        super().__init__(user_id, process_id, tipo, d_estimada, d_real)
+        
