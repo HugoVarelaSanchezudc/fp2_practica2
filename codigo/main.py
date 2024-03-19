@@ -9,6 +9,7 @@ class Gestor_Colas:
     def __init__(self,proceso):
         self._proceso = proceso
 
+
     def __str__ (self):
         return f'{self.cola_procesos}'
         
@@ -17,7 +18,11 @@ class Gestor_Colas:
     def proceso(self):
         return self._proceso
     
-    
+    def is_penalitated(self, proceso):
+        if proceso.contador - proceso.tiempo_inicial > 5:
+            pass
+
+
     def tipo_cola(self,colas):
         i = self.proceso
         # print(i.tipo)
@@ -53,27 +58,60 @@ with open(archivo, 'r') as contenido:
     info_procesos = contenido.read()
     
 contador = 0
+
+#Creamos un for, dondem metemos cada linea de codigo de longitud distinta de 0 en la cola
+
 for line in info_procesos.split('\n'):
+
     if len(line) != 0:
+
         datos_proceso = line.split()
         proces_id, user_id, tipo1, dur_estimada, dur_real = datos_proceso
         proceso1=Procesos(proces_id, user_id, tipo1, dur_estimada, dur_real,contador)
         # print(proceso1)
+
         cola_reg.enqueue(proceso1)
-        finalizar = False
-        while finalizar != True:
-            contador += 1
-            # datos_proceso = line.split()
-            # proces_id, user_id, tipo1, dur_estimada, dur_real = datos_proceso
-            cola_reg.first().contador = contador
-            print(cola_reg.first())
-            procesos = Gestor_Colas(cola_reg.first())
-            procesos.tipo_cola(colas)
-            # proceso1=Procesos(proces_id, user_id, tipo1, dur_estimada, dur_real,contador)
-            # print(proceso1)
-            # cola_reg.enqueue(proceso1)
-            break
+
+
+
+
+while len(cola_reg) > 0:
+    aux1 = cola_reg.dequeue()
+    aux1.tiempo_inicial = contador
+
+    for i in range(aux1.d_real):
+        contador += 1
+
+    aux1.contador = contador
+
+    proceso = Gestor_Colas(aux1)
+    proceso.tipo_cola(colas)
+
     
+
+    print('cpu short', len(cpu_short))
+    print('cpu long', len(cpu_long))
+    print('gpu short', len(gpu_short))
+    print('gpu long', len(gpu_long))
+
+#H: pq no se mira ya la penalizacion antes de guardarlo, ya que al meterlo al tipo cola puede meter un proceso
+#que por la penalizacion iria en una cola distinta
+    
+        
+print('CPU Short\n\n\n', cpu_short)
+print('CPU Long\n\n\n', cpu_long)
+print('GPU Short\n\n\n', gpu_short)
+print('GPU Long\n\n\n', gpu_long)
+
+
+
+
+
+
+
+
+
+
 
 '''
 #Pruebas
