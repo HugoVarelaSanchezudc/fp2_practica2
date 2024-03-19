@@ -6,39 +6,36 @@ import sys
 
 
 class Gestor_Colas:
-    def __init__(self,cola_procesos):
-        self._cola_procesos = cola_procesos
+    def __init__(self,proceso):
+        self._proceso = proceso
 
     def __str__ (self):
         return f'{self.cola_procesos}'
         
 
     @property
-    def cola_procesos(self):
-        return self._cola_procesos
+    def proceso(self):
+        return self._proceso
     
     
     def tipo_cola(self,colas):
-        while self.cola_procesos.__len__() > 0:
+        i = self.proceso
+        # print(i.tipo)
+        if i.tipo == 'cpu':
 
-            i = self.cola_procesos.dequeue()
-            # print(i.tipo)
-
-            if i.tipo == 'cpu':
-
-                if i.d_estimada == 'short':
-                    colas[3].enqueue(i)
-
-                else:
-                    colas[2].enqueue(i)
+            if i.d_estimada == 'short':
+                colas[3].enqueue(i)
 
             else:
+                colas[2].enqueue(i)
 
-                if i.d_estimada == 'short':
-                    colas[1].enqueue(i)
+        else:
 
-                else:
-                    colas[0].enqueue(i)
+            if i.d_estimada == 'short':
+                colas[1].enqueue(i)
+
+            else:
+                colas[0].enqueue(i)
             
 
 archivo = sys.argv[1]
@@ -54,20 +51,31 @@ colas = (gpu_long,gpu_short,cpu_long,cpu_short)
 
 with open(archivo, 'r') as contenido:
     info_procesos = contenido.read()
-
+    
+contador = 0
 for line in info_procesos.split('\n'):
-
     if len(line) != 0:
-
         datos_proceso = line.split()
         proces_id, user_id, tipo1, dur_estimada, dur_real = datos_proceso
-
-        proceso1=Procesos(proces_id, user_id, tipo1, dur_estimada, dur_real)
-        #print(proceso1)
+        proceso1=Procesos(proces_id, user_id, tipo1, dur_estimada, dur_real,contador)
+        # print(proceso1)
         cola_reg.enqueue(proceso1)
+        finalizar = False
+        while finalizar != True:
+            contador += 1
+            # datos_proceso = line.split()
+            # proces_id, user_id, tipo1, dur_estimada, dur_real = datos_proceso
+            cola_reg.first().contador = contador
+            print(cola_reg.first())
+            procesos = Gestor_Colas(cola_reg.first())
+            procesos.tipo_cola(colas)
+            # proceso1=Procesos(proces_id, user_id, tipo1, dur_estimada, dur_real,contador)
+            # print(proceso1)
+            # cola_reg.enqueue(proceso1)
+            break
     
 
-
+'''
 #Pruebas
 
 print(cola_reg)
@@ -101,4 +109,4 @@ print('Hola', cpu_short)
 # while cpu_short.__len__() > 0:
 #     i = cpu_short.dequeue()
 #     print (i.tipo, i.d_estimada) 
-
+'''
