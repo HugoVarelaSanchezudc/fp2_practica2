@@ -6,26 +6,31 @@ import sys
 
 
 class Gestor_Colas:
+    
     def __init__(self,proceso):
         self._proceso = proceso
 
 
     def __str__ (self):
-        return f'{self.cola_procesos}'
+        return f'{self.proceso}'
         
 
     @property
     def proceso(self):
         return self._proceso
     
-    def is_penalitated(self, proceso):
-        if proceso.contador - proceso.tiempo_inicial > 5:
-            pass
+    def is_penalitated(self, proceso,index, usuarios=[]):
+        if (index == 1) or (index == 3):
+            tiempo_ejec = proceso.contador - proceso.tiempo_inicial
+            if (tiempo_ejec > 5) and (proceso.user_id not in usuarios):
+                usuarios.append(proceso.user_id)
+                print(f'{proceso.user_id} ha sido penalizado')
+        
 
 
     def tipo_cola(self,colas):
+        
         i = self.proceso
-        # print(i.tipo)
         if i.tipo == 'cpu':
 
             if i.d_estimada == 'short':
@@ -68,27 +73,71 @@ for line in info_procesos.split('\n'):
         datos_proceso = line.split()
         proces_id, user_id, tipo1, dur_estimada, dur_real = datos_proceso
         proceso1=Procesos(proces_id, user_id, tipo1, dur_estimada, dur_real,contador)
-        # print(proceso1)
 
         cola_reg.enqueue(proceso1)
 
 
 
+usuarios_penalizados = []
 
 while len(cola_reg) > 0:
     aux1 = cola_reg.dequeue()
     aux1.tiempo_inicial = contador
-
-    for i in range(aux1.d_real):
-        contador += 1
-
     aux1.contador = contador
-
+    
     proceso = Gestor_Colas(aux1)
     proceso.tipo_cola(colas)
+    
+    
+    # print('Usario\n',aux1.user_id,'\n\n')
+    # print('Tipo',aux1.d_estimada)
+    
+    # print(usuarios_penalizados)
+    
+    nombre = aux1.user_id
+    
+    if nombre in usuarios_penalizados:
+        if (aux1.tipo == 'gpu') and (aux1.d_estimada == 'short'):
+            aux1.d_estimada = 'long'
+            cola_reg.enqueue(gpu_short.dequeue())
+            usuarios_penalizados.pop(usuarios_penalizados.index(aux1.user_id))
+            print(f'Movemos {aux1.process_id} de {nombre} al final de la cola de gpu')
+        elif (aux1.tipo == 'cpu') and (aux1.d_estimada == 'short'):
+            aux1.d_estimada = 'long'
+            cola_reg.enqueue(cpu_short.dequeue())
+            usuarios_penalizados.pop(usuarios_penalizados.index(aux1.user_id))
+            print(f'Movemos {aux1.process_id} de {nombre} al final de la cola de gpu')
+    else:
+    
+        if len(gpu_short) > 0:
+            index = 1
+        elif len(cpu_short) > 0:
+            index = 3
+        elif len(gpu_long) > 0:
+            index = 0
+        else:
+            index = 2
+            
+        for i in range(aux1.d_real):
+            contador += 1
+    
+        
+        aux1.contador = contador
+        
+        print(aux1)
+        
+        proceso.is_penalitated(aux1,index, usuarios_penalizados)
+        
+        colas[index].dequeue()
 
     
+    
+    
+   
+        
 
+    
+'''
     print('cpu short', len(cpu_short))
     print('cpu long', len(cpu_long))
     print('gpu short', len(gpu_short))
@@ -96,13 +145,14 @@ while len(cola_reg) > 0:
 
 #H: pq no se mira ya la penalizacion antes de guardarlo, ya que al meterlo al tipo cola puede meter un proceso
 #que por la penalizacion iria en una cola distinta
+
     
         
 print('CPU Short\n\n\n', cpu_short)
 print('CPU Long\n\n\n', cpu_long)
 print('GPU Short\n\n\n', gpu_short)
 print('GPU Long\n\n\n', gpu_long)
-
+'''
 
 
 
@@ -118,9 +168,10 @@ print('GPU Long\n\n\n', gpu_long)
 
 print(cola_reg)
 procesos = Gestor_Colas(cola_reg) #Creo el gestor de colas
+print(procesos)
 procesos.tipo_cola(colas) #Asocio cada proceso de la cola de de registros segun su tipo y duracion en 4 colas diferentes
 
-print('Hola', cpu_short)
+print('Hola', cpu_short)'''
 
 
 #-------------------------------------------------------------------Pruebas--------------------------------------------------------------------------
@@ -147,4 +198,3 @@ print('Hola', cpu_short)
 # while cpu_short.__len__() > 0:
 #     i = cpu_short.dequeue()
 #     print (i.tipo, i.d_estimada) 
-'''

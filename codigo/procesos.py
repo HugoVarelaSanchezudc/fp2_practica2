@@ -2,7 +2,7 @@ import array_queue as arr
 
 class Procesos:
 
-    def __init__(self, user_id, process_id,tipo,d_estimada,d_real,contador=0, tiempo_inicial = int()):
+    def __init__(self,process_id, user_id,tipo,d_estimada,d_real,contador=0, tiempo_inicial = int()):
         self._user_id = user_id
         self._process_id = process_id
         self._tipo = tipo
