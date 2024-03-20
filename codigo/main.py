@@ -19,10 +19,13 @@ class Gestor_Colas:
     def proceso(self):
         return self._proceso
     
-    def is_penalitated(self, proceso,index, usuarios=[]):
+    def is_penalitated(self, proceso, index, usuarios = []):
+
         if (index == 1) or (index == 3):
             tiempo_ejec = proceso.contador - proceso.tiempo_inicial
+
             if (tiempo_ejec > 5) and (proceso.user_id not in usuarios):
+
                 usuarios.append(proceso.user_id)
                 print(f'{proceso.user_id} ha sido penalizado')
         
@@ -78,35 +81,45 @@ for line in info_procesos.split('\n'):
 
 
 
-usuarios_penalizados = []
+usuarios_penalizados = [ ]
 
 while len(cola_reg) > 0:
-    aux1 = cola_reg.dequeue()
-    aux1.tiempo_inicial = contador
-    aux1.contador = contador
+    proceso_actual = cola_reg.dequeue()
+    proceso_actual.tiempo_inicial = contador
+    proceso_actual.contador = contador
     
-    proceso = Gestor_Colas(aux1)
+    proceso = Gestor_Colas(proceso_actual)
     proceso.tipo_cola(colas)
     
     
-    # print('Usario\n',aux1.user_id,'\n\n')
-    # print('Tipo',aux1.d_estimada)
+    # print('Usario\n',proceso_actual.user_id,'\n\n')
+    # print('Tipo',proceso_actual.d_estimada)
     
     # print(usuarios_penalizados)
     
-    nombre = aux1.user_id
+    nombre = proceso_actual.user_id
     
     if nombre in usuarios_penalizados:
-        if (aux1.tipo == 'gpu') and (aux1.d_estimada == 'short'):
-            aux1.d_estimada = 'long'
-            cola_reg.enqueue(gpu_short.dequeue())
-            usuarios_penalizados.pop(usuarios_penalizados.index(aux1.user_id))
-            print(f'Movemos {aux1.process_id} de {nombre} al final de la cola de gpu')
-        elif (aux1.tipo == 'cpu') and (aux1.d_estimada == 'short'):
-            aux1.d_estimada = 'long'
-            cola_reg.enqueue(cpu_short.dequeue())
-            usuarios_penalizados.pop(usuarios_penalizados.index(aux1.user_id))
-            print(f'Movemos {aux1.process_id} de {nombre} al final de la cola de gpu')
+
+        if (proceso_actual.tipo == 'gpu') and (proceso_actual.d_estimada == 'short'):
+            
+            proceso_actual.d_estimada = 'long'
+            gpu_long.enqueue(gpu_short.dequeue())
+            usuarios_penalizados.pop(usuarios_penalizados.index(proceso_actual.user_id))
+
+            print(f'Movemos {proceso_actual.process_id} de {nombre} al final de la cola de gpu')
+
+            
+
+        elif (proceso_actual.tipo == 'cpu') and (proceso_actual.d_estimada == 'short'):
+
+            proceso_actual.d_estimada = 'long'
+            cpu_long.enqueue(cpu_short.dequeue())
+            usuarios_penalizados.pop(usuarios_penalizados.index(proceso_actual.user_id))
+
+            print(f'Movemos {proceso_actual.process_id} de {nombre} al final de la cola de cpu')
+
+
     else:
     
         if len(gpu_short) > 0:
@@ -118,15 +131,12 @@ while len(cola_reg) > 0:
         else:
             index = 2
             
-        for i in range(aux1.d_real):
+        while contador <= proceso_actual.tiempo_inicial - proceso_actual.contador:
             contador += 1
-    
-        
-        aux1.contador = contador
-        
-        print(aux1)
-        
-        proceso.is_penalitated(aux1,index, usuarios_penalizados)
+            proceso_actual.contador = contador
+
+
+        proceso.is_penalitated(proceso_actual,index, usuarios_penalizados)
         
         colas[index].dequeue()
 
