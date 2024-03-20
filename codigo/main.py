@@ -136,7 +136,7 @@ def main():
     #Creamos un for, dondem metemos cada linea de codigo de longitud distinta de 0 en la cola
 
     for line in info_procesos.split('\n'):
-
+        
         if len(line) != 0:
 
             datos_proceso = line.split()
@@ -147,8 +147,7 @@ def main():
 
 
 
-
-    while (len(cola_reg) + len(cpu_long) + len(cpu_short) + len(gpu_long) + len(gpu_short)) > 0:
+    while ((len(cola_reg) != 0) or ((len(cpu_long) + len(cpu_short) + len(gpu_long) + len(gpu_short)) > 0)):    
         proceso_actual = cola_reg.dequeue()
 
         proceso = Gestor_Colas(proceso_actual)
@@ -157,19 +156,19 @@ def main():
 
         if len(cpu_short) > 0:
             ejecucion(cpu_short, usuarios_penalizados, contador)
-
+            print(f'\n\n\n CPU Short: {contador}', cpu_short)
 
         if len(gpu_short) > 0:
             ejecucion(gpu_short, usuarios_penalizados, contador)
-
+            print(f'\n\n\n GPU Short: {contador}', gpu_short)
 
         if len(cpu_long):
             ejecucion(cpu_long, usuarios_penalizados, contador)
-
+            print(f'\n\n\n CPU Long: {contador}', cpu_long)
 
         if len(gpu_long):
             ejecucion(gpu_long, usuarios_penalizados, contador)
-
+            print(f'\n\n\n GPU Long: {contador}', gpu_long)
 
 
 
@@ -180,3 +179,14 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
+
+
+
+
+    
