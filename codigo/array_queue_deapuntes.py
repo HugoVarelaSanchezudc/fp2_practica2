@@ -79,3 +79,12 @@ class ArrayQueue:
       self._data[k] = old[walk]            # intentionally shift indices
       walk = (1 + walk) % len(old)         # use old size as modulus
     self._front = 0                        # front has been realigned
+                         
+  def __str__(self):
+      s = "[\n"
+      for i in range(self._front, self._size):
+          s += "\t" + self._data[i].__str__() + "\n"
+      s += "]\n"
+      return s  
+
+

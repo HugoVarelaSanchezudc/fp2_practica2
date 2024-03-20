@@ -1,4 +1,4 @@
-import array_queue as aq
+import array_queue_deapuntes as aq
 from procesos import *
 import sys
 import time
@@ -25,7 +25,7 @@ class Gestor_Colas:
 
     def is_penalitated(self, proceso, usuarios):
             
-            tiempo_ejec = proceso.interaccion - proceso.tiempo_inicial
+            tiempo_ejec = (proceso.interaccion - proceso.tiempo_inicial) + 1
             print(tiempo_ejec)
             if (tiempo_ejec > 5) and (proceso.user_id not in usuarios):
 
@@ -58,9 +58,11 @@ class Gestor_Colas:
 def penalizar(usuarios_penalizados, cola, colas):
     aux = cola.first()
     nombre = aux.user_id
-    print ('si')
+    print ('si', nombre)
+    print(usuarios_penalizados)
+    
     if nombre in usuarios_penalizados:
-
+        print('Entre aquí')
         if aux.tipo == 'gpu':
             print(' a gpu long')
             colas[0].enqueue(cola.dequeue())
@@ -90,7 +92,7 @@ def ejecucion (cola, usu_penalizados, contador,colas):
     if aux.tiempo_inicial == None:
         aux.tiempo_inicial = contador
         aux.interaccion = contador
-        if aux.tipo == 'short':
+        if aux.d_estimada == 'short':
              print('\n\n\n------------------------\n\n\n\n\n')
              penalizar(usu_penalizados, cola,colas)
     
@@ -127,7 +129,8 @@ def main():
     colas = (gpu_long,gpu_short,cpu_long,cpu_short)
     usuarios_penalizados = []
     contador = 0
-
+    bucle_aux =(len(cpu_long) + len(cpu_short) + len(gpu_long) + len(gpu_short))
+    
     with open(archivo, 'r') as contenido:
         info_procesos = contenido.read()
 
@@ -146,7 +149,7 @@ def main():
 
 
 
-    while ((len(cola_reg) != 0) or ((len(cpu_long) + len(cpu_short) + len(gpu_long) + len(gpu_short)) > 0)):    
+    while (len(cola_reg) + bucle_aux) != 0:    
         if not(len(cola_reg) == 0):
             proceso_actual = cola_reg.dequeue()
         #proceso_actual.tiempo_inicial = contador
@@ -164,29 +167,33 @@ def main():
         if len(cpu_short) > 0:
             ejecucion(cpu_short, usuarios_penalizados, contador,colas)
             print(f'\n\n\n CPU Short: {contador}', cpu_short)
-            # print(f'\n y su longitud: {len(cpu_short)}')
-            time.sleep(1.5)
+            print(f'\n y su longitud: {len(cpu_short)}')
+            if len(cpu_short) > 0:
+                print(f'\n y el primer elemento {cpu_short.first()}')
+            time.sleep(0.3)
         if len(gpu_short) > 0:
             ejecucion(gpu_short, usuarios_penalizados, contador,colas)
             print(f'\n\n\n GPU Short: {contador}', gpu_short)
             # print(f'\n y su longitud: {len(gpu_short)}')
-            time.sleep(1.5)
+            time.sleep(0.3)
         if len(cpu_long):
             ejecucion(cpu_long, usuarios_penalizados, contador,colas)
             print(f'\n\n\n CPU Long: {contador}', cpu_long)
-            # print(f'\n y su longitud: {len(cpu_long)}')
-            time.sleep(1.5)
+            print(f'\n y su longitud: {len(cpu_long)}')
+            time.sleep(0.3)
         if len(gpu_long):
             ejecucion(gpu_long, usuarios_penalizados, contador, colas)
             print(f'\n\n\n GPU Long: {contador}', gpu_long)
-            # print(f'\n y su longitud: {len(gpu_long)}')
-            # time.sleep(2)
+            print(f'\n y su longitud: {len(gpu_long)}')
+            time.sleep(0.3)
 
 
 
         contador += 1
-
-
+        print('Bucle Aux ANTES:', bucle_aux)
+        bucle_aux =(len(cpu_long) + len(cpu_short) + len(gpu_long) + len(gpu_short))
+        print('Bucle Aux DESPUES:', bucle_aux)
+        print('Longitud COLA_REG:',len(cola_reg))
 
 if __name__ == '__main__':
     main()
