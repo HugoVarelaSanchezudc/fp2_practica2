@@ -3,7 +3,7 @@
 import array_queue as aq
 from procesos import *
 import sys
-#import time
+import pandas as pd
 
 
 
@@ -227,9 +227,11 @@ class Gestor_Colas:
     
                 colas_ejecucion[0].enqueue(cola.dequeue())
                 usuarios_penalizados.pop(usuarios_penalizados.index(aux.user_id))
-    
-    
-    
+                
+                aux.penalizado = 1
+                
+                aux.d_estimada = 'long*'
+            
             elif aux.tipo == 'cpu':
                 
                 aux.tiempo_inicial = None
@@ -237,16 +239,17 @@ class Gestor_Colas:
                 
                 colas_ejecucion[2].enqueue(cola.dequeue())
                 usuarios_penalizados.pop(usuarios_penalizados.index(aux.user_id))
+                
+                aux.penalizado = 1
 
-
-
+                aux.d_estimada = 'long*'
 
 #'----------------------------------------------------Ejecucion------------------------------------------------------'
 
 
 #Funcion para la ejecucion de los procesos
 
-def ejecucion (cola : aq.ArrayQueue, usuarios_penalizados : list, ciclo : int, colas_ejecucion : list, nombre_proceso : str) -> None:
+def ejecucion (cola : aq.ArrayQueue, usuarios_penalizados : list, ciclo : int, colas_ejecucion : list, nombre_proceso : str, values_tablas: list) -> None:
 
     """Ejecuta los procesos unidad de tiempo por unidad de tiempo.
 
@@ -306,13 +309,18 @@ def ejecucion (cola : aq.ArrayQueue, usuarios_penalizados : list, ciclo : int, c
         if aux.d_real == (ciclo - aux.tiempo_inicial):
 
             print(f'\n{nombre_proceso}: {aux.process_id} terminado:\n\t{ciclo} {aux.process_id} {aux.tipo}\n\tDu_estimada: {aux.d_estimada}, Ciclo: {aux.interaccion}, Ciclo_inicial: {aux.tiempo_inicial}, Duracion: {aux.d_real}\n')
-            #assert aux.process_id != 'FTAFM3Ef', contador
                 
             if aux.d_estimada == 'short' :
 
                 proceso.is_penalitated(aux, usuarios_penalizados, ciclo)
+                
+            info_proceso = [aux.user_id, aux.process_id, nombre_proceso, (aux.tiempo_inicial - aux.entrada_cola), aux.penalizado, aux.entrada_cola, aux.tiempo_inicial]
+            values_tablas.append(info_proceso)   
+            
             cola.dequeue()
-        
+            
+            
+            
         elif 1 == (ciclo - aux.tiempo_inicial):
             print(f'{nombre_proceso}: proceso {aux.process_id} \n\tPrimera ejecucion')
             aux.interaccion = ciclo
@@ -324,6 +332,13 @@ def ejecucion (cola : aq.ArrayQueue, usuarios_penalizados : list, ciclo : int, c
 
 
 '----------------------------------------------------Main------------------------------------------------------'
+
+
+
+
+
+
+
 
 
 
@@ -361,7 +376,7 @@ def main():
     colas_ejecucion = (gpu_long, gpu_short, cpu_long, cpu_short)
 
     #Creamos un par mas de variables
-
+    values_tablas = []
     usuarios_penalizados = []
     contador = 0
     #Se puede pensar que el contador deberia empezar en uno, para nosotros no. A nuestra interpretacion, cuando ponemos un cronometro, el tiempo empieza en cero
@@ -400,7 +415,9 @@ def main():
         if not(len(cola_reg) == 0):
 
             proceso_actual = cola_reg.dequeue()
+            
             proceso = Gestor_Colas(proceso_actual)
+            proceso_actual.entrada_cola = contador
             proceso.tipo_cola(colas_ejecucion, contador)
         
         print(f'\n-------- \nCiclo: {contador}\n-------- \n')
@@ -410,22 +427,22 @@ def main():
 
 
         if len(cpu_short) > 0:
-            ejecucion(cpu_short, usuarios_penalizados, contador,colas_ejecucion, 'CPU Short')
+            ejecucion(cpu_short, usuarios_penalizados, contador,colas_ejecucion, 'CPU Short', values_tablas)
         else:
             print('CPU Short: None')
             
         if len(gpu_short) > 0:
-            ejecucion(gpu_short, usuarios_penalizados, contador,colas_ejecucion, 'GPU Short')
+            ejecucion(gpu_short, usuarios_penalizados, contador,colas_ejecucion, 'GPU Short', values_tablas)
         else:
             print('GPU Short: None')
 
         if len(cpu_long) > 0:
-            ejecucion(cpu_long, usuarios_penalizados, contador,colas_ejecucion, 'CPU Long')
+            ejecucion(cpu_long, usuarios_penalizados, contador,colas_ejecucion, 'CPU Long',values_tablas)
         else:
             print('CPU Long: None')
             
         if len(gpu_long) > 0:
-            ejecucion(gpu_long, usuarios_penalizados, contador, colas_ejecucion, 'GPU Long')
+            ejecucion(gpu_long, usuarios_penalizados, contador, colas_ejecucion, 'GPU Long', values_tablas)
         else:
             print('GPU Long: None')
             
@@ -439,16 +456,30 @@ def main():
         bucle_aux =(len(cpu_long) + len(cpu_short) + len(gpu_long) + len(gpu_short))
 
         
-        
-        
+    print('\nSe han terminado de ejecutar todos los procesos')
+    
+    data = pd.DataFrame(values_tablas, columns = ['Usuario', 'Proceso', 'Tipo_cola', 'Perm_gestor', 'Penalizacion','Entrada','Inicio'])
+    print(data)
+    
+    print('\n\n\n')
+    
+    group_col = 'Usuario'
+    target_col = 'Penalizacion'
+    penals = data.groupby(group_col).agg({target_col :["mean"]})
+    print(penals)
+    
+    print('\n\n\n')
+    
+    group_col = 'Tipo_cola'
+    target_col = 'Perm_gestor'
+    permanencia = data.groupby(group_col).agg({target_col :["mean"]})
+    print(permanencia)
 
 if __name__ == '__main__':
     
     main()
 
-    print('\nSe han terminado de ejecutar todos los procesos')
-
-
+    
 
 
 

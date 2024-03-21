@@ -41,7 +41,7 @@ class Procesos:
     
     """ 
 
-    def __init__(self,process_id : str, user_id : str, tipo : str, d_estimada : int, d_real : int,interaccion = 0, tiempo_inicial = None):
+    def __init__(self,process_id : str, user_id : str, tipo : str, d_estimada : int, d_real : int,interaccion = None, tiempo_inicial = None, penalizado = 0, entrada_cola = None):
 
         """Asigna atributos al objeto.
 
@@ -66,6 +66,14 @@ class Procesos:
 
         tiempo_inicial: int
             Unidad en la que el proceso entra a ejecutarse
+        
+        penalizado: int
+            Unidad que indica la penalización del proceso
+            0 -> No ha sido penalizado
+            1 -> Ha recibido penalización
+            
+        entrada_cola: int
+            Unidad en la que el proceso entra a su respectiva cola de ejecución
 
         ------- 
         Returns
@@ -78,11 +86,12 @@ class Procesos:
         self._user_id = user_id
         self._process_id = process_id
         self._tipo = tipo
-        self._d_estimada = d_estimada
+        self.d_estimada = d_estimada
         self._d_real = d_real
-        self._interaccion = interaccion
-        self._tiempo_inicial = tiempo_inicial
-
+        self.interaccion = interaccion
+        self.tiempo_inicial = tiempo_inicial
+        self.penalizado = penalizado
+        self.entrada_cola = entrada_cola
         
     def __str__(self) -> str:
         return f'Proceso: {self.process_id}, usuario: {self.user_id}, tipo: {self.tipo}, d_estimada: {self.d_estimada}, interaccion: {self.interaccion}, d_inicial: {self.tiempo_inicial}, d_real: {self.d_real}'
@@ -133,3 +142,19 @@ class Procesos:
     @tiempo_inicial.setter
     def tiempo_inicial(self, tiempo_inicial : None) -> int:
         self._tiempo_inicial = tiempo_inicial
+        
+        
+    @property
+    def penalizado(self):
+        return self._penalizado
+    @penalizado.setter
+    def penalizado(self, penalizado : int) -> int:
+        self._penalizado = penalizado
+
+
+    @property
+    def entrada_cola(self):
+        return self._entrada_cola
+    @entrada_cola.setter
+    def entrada_cola(self, entrada_cola: None) -> int:
+        self._entrada_cola = entrada_cola
