@@ -1,6 +1,6 @@
 #Importamos los archivos y librerias necesarias
 
-import array_queue_deapuntes as aq
+import array_queue as aq
 from procesos import *
 import sys
 #import time
@@ -35,7 +35,7 @@ class Gestor_Colas:
     def __str__ (self):
         Muestra por pantalla el proceso.
 
-    def is_penalitated (self, proceso, usuarios):
+    def is_penalitated (self, proceso, usuarios, timepo):
         Añade a usuarios que no cumplas ciertos requisitos 
         en un proceso a una lista para penalizarlos en un futuro.
     
@@ -104,7 +104,7 @@ class Gestor_Colas:
 
 
 
-    def is_penalitated(self, proceso : Procesos, usuarios : list) -> None:
+    def is_penalitated(self, proceso : Procesos, usuarios : list, tiempo) -> None:
         """Almacena las personas que deben ser penalizadas.
 
         ----------
@@ -132,11 +132,12 @@ class Gestor_Colas:
         if (tiempo_ejec > 5) and (proceso.user_id not in usuarios):
             
             usuarios.append(proceso.user_id)
+            print(f'\nPenalización activa: {tiempo} {proceso.user_id} ')
         
 #'----------------------------------------------------Tipo cola------------------------------------------------------'
 
 
-    def tipo_cola(self, colas:list) -> None: 
+    def tipo_cola(self, colas:list, tiempo) -> None: 
 
         """Almacena el proceso en la cole correspondiente.
 
@@ -159,27 +160,32 @@ class Gestor_Colas:
 
         i = self.proceso
 
-
         if i.tipo == 'cpu':
             
             if i.d_estimada == 'short':
                 colas[3].enqueue(i)
+                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n {i.tipo} {i.d_estimada}\n')
+                
             else:
                 colas[2].enqueue(i)
+                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n {i.tipo} {i.d_estimada}')
 
         else:
 
             if i.d_estimada == 'short':
                 colas[1].enqueue(i)
+                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n {i.tipo} {i.d_estimada}')
+
             else:
                 colas[0].enqueue(i)
+                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n {i.tipo} {i.d_estimada}')
 
 
 
 #'----------------------------------------------------Penalizar------------------------------------------------------'
 
 
-def penalizar(usuarios_penalizados : list, cola : aq.ArrayQueue, colas : list):
+def penalizar(usuarios_penalizados : list, cola : aq.ArrayQueue, colas : list, tiempo):
     
     """Penaliza a los usuarios que deberian ser penalizados.
 
@@ -213,12 +219,15 @@ def penalizar(usuarios_penalizados : list, cola : aq.ArrayQueue, colas : list):
     #añade a la cola correspondiente inicializando su tiempo inicial.
 
     if nombre in usuarios_penalizados:
+        print(f'\nPenalización aplicada: {tiempo} {aux.process_id} {aux.user_id} ')
+
         if aux.tipo == 'gpu':
 
             aux.tiempo_inicial = None
 
             colas[0].enqueue(cola.dequeue())
             usuarios_penalizados.pop(usuarios_penalizados.index(aux.user_id))
+
 
 
         elif aux.tipo == 'cpu':
@@ -228,6 +237,8 @@ def penalizar(usuarios_penalizados : list, cola : aq.ArrayQueue, colas : list):
             
             colas[2].enqueue(cola.dequeue())
             usuarios_penalizados.pop(usuarios_penalizados.index(aux.user_id))
+
+
 
 
 #'----------------------------------------------------Ejecucion------------------------------------------------------'
@@ -287,21 +298,26 @@ def ejecucion (cola : aq.ArrayQueue, usu_penalizados : list, contador : int, col
 
         aux.tiempo_inicial = contador
         aux.interaccion = contador
+        print(f'\nSe empieza a ejecutar el proceso: {aux.process_id}')
 
         if aux.d_estimada == 'short':
-             penalizar(usu_penalizados, cola,colas)
+             penalizar(usu_penalizados, cola,colas, contador)
     
     else:
 
         if aux.d_real == (contador - aux.tiempo_inicial):
 
+            print(f'\nProceso terminado: {contador} {aux.process_id} {aux.tipo}\nDu_estimada: {aux.d_estimada}, Ciclo: {aux.interaccion}, Ciclo_inicial: {aux.tiempo_inicial}, Duracion: {aux.d_real}')
+            assert aux.process_id != 'FTAFM3Ef', contador
+                
             if aux.d_estimada == 'short' :
 
-                proceso.is_penalitated(aux, usu_penalizados)
+                proceso.is_penalitated(aux, usu_penalizados, contador)
             cola.dequeue()
 
         else:
             aux.interaccion = contador
+            pritn(f'{nombre_proceso}: {aux.process.id}')
     
 
 
@@ -331,7 +347,7 @@ def main():
     #Pasamos los procesos a la variable archivo
 
     #archivo = sys.argv[1]
-    archivo = 'processes1.txt'
+    archivo = 'processes0.txt'
 
     #Creamos las colas y las metemos en una tupla
 
@@ -380,8 +396,9 @@ def main():
 
             proceso_actual = cola_reg.dequeue()
             proceso = Gestor_Colas(proceso_actual)
-            proceso.tipo_cola(colas)
+            proceso.tipo_cola(colas, contador)
         
+        print(f'\n-------- \nCiclo: {contador}\n-------- \n')
         
         #Ejecutamos los procesos (sumamos una unidad de tiempo, añadimos penalizaciones, sacamos...)
 
@@ -400,8 +417,7 @@ def main():
             
 
 
-        print(f'\n\nContador {contador}')
-        print(bucle_aux)
+        
 
         #Incrementamos contador en 1 y actualizamos bucle_aux
 
