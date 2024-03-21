@@ -164,21 +164,21 @@ class Gestor_Colas:
             
             if i.d_estimada == 'short':
                 colas[3].enqueue(i)
-                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n {i.tipo} {i.d_estimada}\n')
+                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}\n')
                 
             else:
                 colas[2].enqueue(i)
-                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n {i.tipo} {i.d_estimada}')
+                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}')
 
         else:
 
             if i.d_estimada == 'short':
                 colas[1].enqueue(i)
-                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n {i.tipo} {i.d_estimada}')
+                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}')
 
             else:
                 colas[0].enqueue(i)
-                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n {i.tipo} {i.d_estimada}')
+                print(f'Proceso añadodo a la cola de ejecucion: {tiempo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}')
 
 
 
@@ -282,7 +282,6 @@ def ejecucion (cola : aq.ArrayQueue, usu_penalizados : list, contador : int, col
     aux = cola.first()
     proceso = Gestor_Colas(aux)
     
-    print(f'{nombre_proceso}: {aux}')
 
     #Si el tiempo inicial es None, es que va a ser la primera vez que se ejecute, por lo tanto
     #su tiempo inicial sera la unidad de tiempo del momento, igual que la interaccion.
@@ -308,7 +307,7 @@ def ejecucion (cola : aq.ArrayQueue, usu_penalizados : list, contador : int, col
         if aux.d_real == (contador - aux.tiempo_inicial):
 
             print(f'\nProceso terminado: {contador} {aux.process_id} {aux.tipo}\nDu_estimada: {aux.d_estimada}, Ciclo: {aux.interaccion}, Ciclo_inicial: {aux.tiempo_inicial}, Duracion: {aux.d_real}')
-            assert aux.process_id != 'FTAFM3Ef', contador
+            #assert aux.process_id != 'FTAFM3Ef', contador
                 
             if aux.d_estimada == 'short' :
 
@@ -317,7 +316,7 @@ def ejecucion (cola : aq.ArrayQueue, usu_penalizados : list, contador : int, col
 
         else:
             aux.interaccion = contador
-            pritn(f'{nombre_proceso}: {aux.process.id}')
+            print(f'{nombre_proceso}: {aux.process_id}')
     
 
 
@@ -346,8 +345,8 @@ def main():
 
     #Pasamos los procesos a la variable archivo
 
-    #archivo = sys.argv[1]
-    archivo = 'processes0.txt'
+    archivo = sys.argv[1]
+    #archivo = 'processes0.txt'
 
     #Creamos las colas y las metemos en una tupla
 
@@ -362,6 +361,9 @@ def main():
 
     usuarios_penalizados = []
     contador = 0
+    #Se puede pensar que el contador deberia empezar en uno, para nosotros no. A nuestra interpretacion, cuando ponemos un cronometro, el tiempo empieza en cero
+    
+
     bucle_aux =(len(cpu_long) + len(cpu_short) + len(gpu_long) + len(gpu_short))
     
     #~Leemos el archivo y los guardamos en info procesos
@@ -399,6 +401,7 @@ def main():
             proceso.tipo_cola(colas, contador)
         
         print(f'\n-------- \nCiclo: {contador}\n-------- \n')
+        print(f'Personas con penalizacion: {usuarios_penalizados}')
         
         #Ejecutamos los procesos (sumamos una unidad de tiempo, añadimos penalizaciones, sacamos...)
 
@@ -423,6 +426,7 @@ def main():
 
         contador += 1
         bucle_aux =(len(cpu_long) + len(cpu_short) + len(gpu_long) + len(gpu_short))
+
         
         
         
@@ -431,7 +435,7 @@ if __name__ == '__main__':
     
     main()
 
-    print('Se han terminado de ejecutar todos los procesos')
+    print('\nSe han terminado de ejecutar todos los procesos')
 
 
 
