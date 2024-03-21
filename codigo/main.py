@@ -185,58 +185,58 @@ class Gestor_Colas:
 #'----------------------------------------------------Penalizar------------------------------------------------------'
 
 
-def penalizar(usuarios_penalizados : list, cola : aq.ArrayQueue, colas_ejecucion : list, ciclo : int):
-    
-    """Penaliza a los usuarios que deberian ser penalizados.
-
-        ----------
-        Parameters
-        ----------
-
-        usuarios_penalizados : list
-            Usuarios penalizados
-
-        cola: aq.ArrayQueue
-            Una cola que almacena procesos
-
-        colas_ejecucion : list
-            Lista con las colas de ejecucion
-
-
-        --------
-        Returns
-        --------
+    def penalizar(self, usuarios_penalizados : list, cola : aq.ArrayQueue, colas_ejecucion : list, ciclo : int):
         
-        None
-        """ 
+        """Penaliza a los usuarios que deberian ser penalizados.
     
-    #Definimos aux como el proceso que se esta ejecutando o se va a ejecutar, y guardamos el nombre del usuario de ese proceso
-
-    aux = cola.first()
-    nombre = aux.user_id
+            ----------
+            Parameters
+            ----------
     
-    #Si el usuario esta en la lista de penalizados, para cada tipo, le cambia la duracion estimada a Long, y lo 
-    #añade a la cola correspondiente inicializando su tiempo inicial.
-
-    if nombre in usuarios_penalizados:
-        print(f'\tPenalización aplicada: ciclo = {ciclo}, {aux.process_id} {aux.user_id} \n')
-
-        if aux.tipo == 'gpu':
-
-            aux.tiempo_inicial = None
-
-            colas_ejecucion[0].enqueue(cola.dequeue())
-            usuarios_penalizados.pop(usuarios_penalizados.index(aux.user_id))
-
-
-
-        elif aux.tipo == 'cpu':
+            usuarios_penalizados : list
+                Usuarios penalizados
+    
+            cola: aq.ArrayQueue
+                Una cola que almacena procesos
+    
+            colas_ejecucion : list
+                Lista con las colas de ejecucion
+    
+    
+            --------
+            Returns
+            --------
             
-            aux.tiempo_inicial = None
-
-            
-            colas_ejecucion[2].enqueue(cola.dequeue())
-            usuarios_penalizados.pop(usuarios_penalizados.index(aux.user_id))
+            None
+            """ 
+        
+        #Definimos aux como el proceso que se esta ejecutando o se va a ejecutar, y guardamos el nombre del usuario de ese proceso
+    
+        aux = cola.first()
+        nombre = aux.user_id
+        
+        #Si el usuario esta en la lista de penalizados, para cada tipo, le cambia la duracion estimada a Long, y lo 
+        #añade a la cola correspondiente inicializando su tiempo inicial.
+    
+        if nombre in usuarios_penalizados:
+            print(f'\tPenalización aplicada: ciclo = {ciclo}, {aux.process_id} {aux.user_id} \n')
+    
+            if aux.tipo == 'gpu':
+    
+                aux.tiempo_inicial = None
+    
+                colas_ejecucion[0].enqueue(cola.dequeue())
+                usuarios_penalizados.pop(usuarios_penalizados.index(aux.user_id))
+    
+    
+    
+            elif aux.tipo == 'cpu':
+                
+                aux.tiempo_inicial = None
+    
+                
+                colas_ejecucion[2].enqueue(cola.dequeue())
+                usuarios_penalizados.pop(usuarios_penalizados.index(aux.user_id))
 
 
 
@@ -299,7 +299,7 @@ def ejecucion (cola : aq.ArrayQueue, usuarios_penalizados : list, ciclo : int, c
         aux.interaccion = ciclo
         print(f'{nombre_proceso}: {aux.process_id} \n\tPreparado para empezar a ejecutarse')
         if aux.d_estimada == 'short':
-             penalizar(usuarios_penalizados, cola, colas_ejecucion, ciclo)
+             proceso.penalizar(usuarios_penalizados, cola, colas_ejecucion, ciclo)
     
     else:
 
