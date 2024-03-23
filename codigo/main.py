@@ -36,7 +36,7 @@ class Gestor_Colas:
         Muestra por pantalla el proceso.
 
     def is_penalitated (self, proceso, usuarios, timepo):
-        Añade a usuarios que no cumplas ciertos requisitos 
+        Añade a usuarios que cumplan ciertos requisitos 
         en un proceso a una lista para penalizarlos en un futuro.
     
     def tipo_cola(self,colas): 
@@ -48,20 +48,6 @@ class Gestor_Colas:
         de la cola short en la que esta para añadirla a la
         cola long del mismo tipo.
         Tambien elimina al usuario de la lista de penalizados
-    
-    def ejecucion (cola, usuarios_penalizados, contador,colas, nombre_proceso):
-        
-        Pasamos un proceso. 
-        Si no tiene tiempo inicial es que va a 
-        empezar a ejecutarlo en ese ciclom asi que le asignamos el tiempo
-        con el que inicia y el tiempo en esa iteracion. Tambien comprobamos si
-        es un proceso short si el usuario esta penalizado, lo que le pasa 
-        a la cola de su mismo tipo pero long.
-
-        Si ya esta inicializado, mientras no se complete el tiempo de ejecucion
-        real, le incrementamos en uno la unidad de tiempo. Cuando termina, si
-        es short, comprueba si tendria que haber penalizacion.
-    
     """
 
 
@@ -231,6 +217,8 @@ class Gestor_Colas:
                 aux.penalizado = 1
                 
                 aux.d_estimada = 'long*'
+                
+                aux.entrada_cola = ciclo
             
             elif aux.tipo == 'cpu':
                 
@@ -243,6 +231,9 @@ class Gestor_Colas:
                 aux.penalizado = 1
 
                 aux.d_estimada = 'long*'
+                
+                aux.entrada_cola = ciclo
+
 
 #'----------------------------------------------------Ejecucion------------------------------------------------------'
 
@@ -251,7 +242,7 @@ class Gestor_Colas:
 
 def ejecucion (cola : aq.ArrayQueue, usuarios_penalizados : list, ciclo : int, colas_ejecucion : list, nombre_proceso : str, values_tablas: list) -> None:
 
-    """Ejecuta los procesos unidad de tiempo por unidad de tiempo.
+    """Ejecuta los procesos por unidad de tiempo.
 
         ----------
         Parameters
