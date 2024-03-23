@@ -150,21 +150,21 @@ class Gestor_Colas:
             
             if i.d_estimada == 'short':
                 colas_ejecucion[3].enqueue(i)
-                print(f'\n{colas_ejecucion[3]}: Proceso {i.process_id} añadido a la cola de ejecucion: \n{ciclo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}\n')
+                print(f'\nProceso {i.process_id} añadido a la cola de ejecucion: \n{ciclo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}\n')
                 
             else:
                 colas_ejecucion[2].enqueue(i)
-                print(f'\n{colas_ejecucion[2]}: Proceso {i.process_id} añadido a la cola de ejecucion: \n{ciclo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}\n')
+                print(f'\nProceso {i.process_id} añadido a la cola de ejecucion: \n{ciclo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}\n')
 
         else:
 
             if i.d_estimada == 'short':
                 colas_ejecucion[1].enqueue(i)
-                print(f'\n{colas_ejecucion[1]}: Proceso {i.process_id} añadido a la cola de ejecucion: \n{ciclo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}\n')
+                print(f'\nProceso {i.process_id} añadido a la cola de ejecucion: \n{ciclo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}\n')
 
             else:
                 colas_ejecucion[0].enqueue(i)
-                print(f'\n{colas_ejecucion[0]}: Proceso {i.process_id} añadido a la cola de ejecucion: \n{ciclo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}\n')
+                print(f'\nProceso {i.process_id} añadido a la cola de ejecucion: \n{ciclo} {i.process_id} {i.user_id}\n{i.tipo} {i.d_estimada}\n')
 
 
 
@@ -402,6 +402,8 @@ def main():
     while (len(cola_reg) + bucle_aux) != 0:    
 
         #Si la lontud de la cola de procesos no es 0, introduce el siguiente proceso a la cola correspondiente
+        print(f'\n-------- \nCiclo: {contador}\n-------- \n')
+        print(f'Personas con penalizacion: {usuarios_penalizados}\n')
 
         if not(len(cola_reg) == 0):
 
@@ -410,9 +412,6 @@ def main():
             proceso = Gestor_Colas(proceso_actual)
             proceso_actual.entrada_cola = contador
             proceso.tipo_cola(colas_ejecucion, contador)
-        
-        print(f'\n-------- \nCiclo: {contador}\n-------- \n')
-        print(f'Personas con penalizacion: {usuarios_penalizados}\n')
         
         #Ejecutamos los procesos (sumamos una unidad de tiempo, añadimos penalizaciones, sacamos...)
 
