@@ -1,3 +1,9 @@
+
+'''
+David Fernández Reimúndez – david.fernandez.reimundez@udc.es
+Hugo Varela Sánchez – hugo.varela.sanchez@udc.es
+'''
+
 #Importamos los archivos y librerias necesarias
 
 import array_queue as aq
@@ -471,11 +477,4 @@ if __name__ == '__main__':
 
     
 
-
-
-
-
-
-#Cambiar nombre de contador a tiempo
-    
     

@@ -1,3 +1,10 @@
+
+'''
+David Fernández Reimúndez – david.fernandez.reimundez@udc.es
+Hugo Varela Sánchez – hugo.varela.sanchez@udc.es
+'''
+
+
 # Copyright 2013, Michael H. Goldwasser
 #
 # Developed for use with the book:

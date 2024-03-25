@@ -1,3 +1,9 @@
+
+'''
+David Fernández Reimúndez – david.fernandez.reimundez@udc.es
+Hugo Varela Sánchez – hugo.varela.sanchez@udc.es
+'''
+
 import array_queue as arr
 
 class Procesos:
